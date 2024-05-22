@@ -287,7 +287,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":29,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
@@ -1010,19 +1010,6 @@
          "name":"background_tilemap_packed",
          "spacing":0,
          "tilecount":40,
-         "tileheight":18,
-         "tilewidth":18
-        }, 
-        {
-         "columns":56,
-         "firstgid":153,
-         "image":"..\/..\/Platformer3A\/Platformer3A\/assets\/spritesheet_players.png",
-         "imageheight":2048,
-         "imagewidth":1024,
-         "margin":0,
-         "name":"spritesheet_players",
-         "spacing":0,
-         "tilecount":6328,
          "tileheight":18,
          "tilewidth":18
         }],
