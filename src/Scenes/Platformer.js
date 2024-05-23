@@ -5,8 +5,8 @@ class Platformer extends Phaser.Scene {
 
     init() {
         // variables and settings
-        this.ACCELERATION = 400;
-        this.DRAG = 500;    // DRAG < ACCELERATION = icy slide
+        this.ACCELERATION = 340;
+        this.DRAG = 600;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 1500;
         this.JUMP_VELOCITY = -600;
         this.PARTICLE_VELOCITY = 50;
@@ -16,20 +16,28 @@ class Platformer extends Phaser.Scene {
     create() {
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
         // 45 tiles wide and 25 tiles tall.
-        this.map = this.add.tilemap("platformer-level-1", 18, 18, 45, 25);
+        this.map = this.add.tilemap("platformer-level-1", 18, 18, 120, 20);
 
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
         // Second parameter: key for the tilesheet (from this.load.image in Load.js)
         this.tileset = this.map.addTilesetImage("kenny_tilemap_packed", "tilemap_tiles");
-
+        this.back = this.map.addTilesetImage("background_tilemap_packed", "tilemap-backgrounds_packed");
         // Create a layer
-        this.groundLayer = this.map.createLayer("Ground-n-Platforms", this.tileset, 0, 0);
-
+        this.backLayer = this.map.createLayer("Background", this.back, 0, 0);
+        this.groundLayer = this.map.createLayer("Ground and plat", this.tileset, 0, 0);
+        this.dedLayer = this.map.createLayer("Ded", this.tileset,0,0);
+        
         // Make it collidable
         this.groundLayer.setCollisionByProperty({
             collides: true
         });
+        this.dedLayer.setCollisionByProperty({
+            ded: true
+        })
+        this.counter = 0;
+
+        
 
         // TODO: Add createFromObjects here
         // Find coins in the "Objects" layer in Phaser
@@ -38,10 +46,10 @@ class Platformer extends Phaser.Scene {
         // Phaser docs:
         // https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects
 
-        this.coins = this.map.createFromObjects("Objects", {
+        this.coins = this.map.createFromObjects("Coin", {
             name: "coin",
             key: "tilemap_sheet",
-            frame: 151
+            frame: 104
         });
 
         // TODO: Add turn into Arcade Physics here
@@ -54,11 +62,13 @@ class Platformer extends Phaser.Scene {
         this.coinGroup = this.add.group(this.coins);
 
         // set up player avatar
-        my.sprite.player = this.physics.add.sprite(30, 345, "platformer_characters", "tile_0000.png");
+        my.sprite.player = this.physics.add.sprite(30, 230, "platformer_characters", "tile_0000.png");
+        this.physics.world.setBounds(0,0,18*120,12*30);
         my.sprite.player.setCollideWorldBounds(true);
 
         // Enable collision handling
         this.physics.add.collider(my.sprite.player, this.groundLayer);
+        this.physics.add.collider(my.sprite.player, this.dedLayer, this.reset);
 
         // TODO: Add coin collision handler
         // Handle collision detection with coins
@@ -78,11 +88,13 @@ class Platformer extends Phaser.Scene {
         }, this);
 
         my.vfx.walking = this.add.particles(0, 0, "kenny-particles", {
-            frame: ['smoke_03.png', 'smoke_09.png'],
-            // TODO: Try: add random: true
+            frame: ['magic_03.png', 'magic_04.png'],
+            // TODO: Try: add random: tru
+            random:true,
             scale: {start: 0.03, end: 0.1},
             // TODO: Try: maxAliveParticles: 8,
-            lifespan: 350,
+            maxAliveParticeles: 3,
+            lifespan: 120,
             // TODO: Try: gravityY: -400,
             alpha: {start: 1, end: 0.1}, 
         });
@@ -112,6 +124,11 @@ class Platformer extends Phaser.Scene {
             if (my.sprite.player.body.blocked.down) {
 
                 my.vfx.walking.start();
+                if(this.counter%60 == 0){
+                    this.sound.play("walk", {
+                        volume: 1 
+                    });
+                }
 
             }
 
@@ -128,6 +145,11 @@ class Platformer extends Phaser.Scene {
             if (my.sprite.player.body.blocked.down) {
 
                 my.vfx.walking.start();
+                if(this.counter%60 == 0){
+                    this.sound.play("walk", {
+                        volume: 1 
+                    });
+                }
 
             }
 
@@ -147,10 +169,17 @@ class Platformer extends Phaser.Scene {
         }
         if(my.sprite.player.body.blocked.down && Phaser.Input.Keyboard.JustDown(cursors.up)) {
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
+            this.counter == -1;
         }
 
         if(Phaser.Input.Keyboard.JustDown(this.rKey)) {
             this.scene.restart();
         }
+        this.counter++;
+    }
+    reset(){
+        my.sprite.player.x  =30;
+        my.sprite.player.y = 230;
+        console.log("ded");
     }
 }
