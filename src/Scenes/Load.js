@@ -17,7 +17,8 @@ class Load extends Phaser.Scene {
             frameWidth: 24,
             frameHeight: 24
         });
-        
+
+        this.load.bitmapFont("rocketSquare", "KennyRocketSquare_0.png", "KennyRocketSquare.fnt");
 
         // Load the tilemap as a spritesheet
         this.load.spritesheet("tilemap_sheet", "tilemap_packed.png", {

@@ -17,6 +17,7 @@ class Platformer extends Phaser.Scene {
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
         // 45 tiles wide and 25 tiles tall.
         this.map = this.add.tilemap("platformer-level-1", 18, 18, 120, 20);
+        my.gameover = false;
 
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
@@ -27,6 +28,7 @@ class Platformer extends Phaser.Scene {
         this.backLayer = this.map.createLayer("Background", this.back, 0, 0);
         this.groundLayer = this.map.createLayer("Ground and plat", this.tileset, 0, 0);
         this.dedLayer = this.map.createLayer("Ded", this.tileset,0,0);
+        this.overLayer = this.map.createLayer("Over", this.tileset,0,0);
         
         // Make it collidable
         this.groundLayer.setCollisionByProperty({
@@ -34,6 +36,9 @@ class Platformer extends Phaser.Scene {
         });
         this.dedLayer.setCollisionByProperty({
             ded: true
+        })
+        this.overLayer.setCollisionByProperty({
+            over: true
         })
         this.counter = 0;
 
@@ -69,6 +74,7 @@ class Platformer extends Phaser.Scene {
         // Enable collision handling
         this.physics.add.collider(my.sprite.player, this.groundLayer);
         this.physics.add.collider(my.sprite.player, this.dedLayer, this.reset);
+        this.physics.add.collider(my.sprite.player, this.overLayer, this.endgame);
 
         // TODO: Add coin collision handler
         // Handle collision detection with coins
@@ -176,10 +182,16 @@ class Platformer extends Phaser.Scene {
             this.scene.restart();
         }
         this.counter++;
+        if(my.gameover){
+            this.scene.start('endScene');
+        }
     }
     reset(){
         my.sprite.player.x  =30;
         my.sprite.player.y = 230;
         console.log("ded");
+    }
+    endgame(){
+        my.gameover = true;
     }
 }
